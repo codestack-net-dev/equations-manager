@@ -1,0 +1,14 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Xarial.Community.EqMgr.View">
+
+    <DataGridTextColumn x:Key="NameColumn" Header="Name" Width="Auto" Binding="{Binding Path=Name}"/>
+    <DataGridTextColumn x:Key="FormulaColumn" Header="Formula" Width="*" Binding="{Binding Path=Formula}"/>
+    <DataGridTextColumn x:Key="EvaluatedValueColumn" Header="Value" Width="Auto" Binding="{Binding Path=EvaluatedValue}"/>
+    
+    <Style TargetType="{x:Type local:ExpressionsEditor}" BasedOn="{StaticResource {x:Type DataGrid}}">
+        <Setter Property="ColumnWidth" Value="*"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+    </Style>
+</ResourceDictionary>
