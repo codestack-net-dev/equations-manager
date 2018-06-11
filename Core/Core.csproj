@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Attributes\RegExVariableAttribute.cs" />
     <Compile Include="Exceptions\EvaluationErrorException.cs" />
+    <Compile Include="Exceptions\ExpressionValueApplyException.cs" />
     <Compile Include="Exceptions\GenericEvaluatorException.cs" />
     <Compile Include="Exceptions\InvalidSyntaxException.cs" />
     <Compile Include="Expression.cs" />

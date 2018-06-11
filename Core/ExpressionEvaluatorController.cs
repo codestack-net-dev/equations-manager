@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Xarial.Community.EqMgr.Core.Exceptions;
 using Xarial.Community.EqMgr.Core.Services;
 
 namespace Xarial.Community.EqMgr.Core
@@ -83,7 +84,7 @@ namespace Xarial.Community.EqMgr.Core
 
                     if (!m_ValSetter.SetValue(exp.Name, evaluatedValue))
                     {
-                        //TODO: throw exception
+                        throw new ExpressionValueApplyException(exp.Name, evaluatedValue);
                     }
                 }
             }
