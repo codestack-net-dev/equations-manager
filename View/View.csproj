@@ -57,7 +57,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{be8e63de-65f2-4663-b608-9b5a4b764a1b}</Project>
-      <Name>Evaluator</Name>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

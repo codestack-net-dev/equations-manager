@@ -7,59 +7,53 @@ using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
 using Unity.Registration;
+using Xarial.Community.EqMgr.Core.Container.Exceptions;
 using Xarial.Community.EqMgr.Core.Services;
 
 namespace Xarial.Community.EqMgr.Core.Container
 {
-    public static class EquationsManagerContainer
+    public class EquationsManagerContainer
     {
-        private static UnityContainer m_Container;
+        private UnityContainer m_Container;
 
-        public static void Init(IContainerModule module)
+        public EquationsManagerContainer(IContainerModule module)
         {
             m_Container = new UnityContainer();
 
-            foreach (var varResolverType in module.RegisterVariableResolvers())
-            {
-                var specType = varResolverType.GetType();
-
-                m_Container.RegisterType(
-                    typeof(IVariableResolver),
-                    varResolverType.GetType(),
-                    specType.FullName,
-                    new ContainerControlledLifetimeManager(),
-                    null);
-            }
-
-            m_Container.RegisterType(
-                typeof(IExpressionEvaluator),
-                module.RegisterExpressionEvaluator().GetType(),
-                new ContainerControlledLifetimeManager());
-
-            m_Container.RegisterType(
-                typeof(IValueSetter),
-                module.RegisterValueSetter().GetType(),
-                new ContainerControlledLifetimeManager());
-
-            m_Container.RegisterType(
-                typeof(IVariablesMonitor),
-                module.RegisterVariablesMonitor().GetType(),
-                new ContainerControlledLifetimeManager());
-
-            m_Container.RegisterType(
-                typeof(IVariablesProcessor),
-                module.RegisterVariablesProcessor().GetType(),
-                new ContainerControlledLifetimeManager());
+            RegisterService<IVariableResolver>(r => module.RegisterVariableResolver(r));
+            RegisterService<IExpressionEvaluator>(r => module.RegisterExpressionEvaluator(r));
+            RegisterService<IValueSetter>(r => module.RegisterValueSetter(r));
+            RegisterService<IVariablesMonitor>(r => module.RegisterVariablesMonitor(r));
+            RegisterService<IVariablesProcessor>(r => module.RegisterVariablesProcessor(r));
 
             m_Container.RegisterType<ExpressionEvaluatorController>();
         }
 
-        /// <summary>
-        /// Returns the controller instance per model
-        /// </summary>
-        public static ExpressionEvaluatorController CreateContoller()
+        public ExpressionEvaluatorController GetEquationsManager()
         {
             return m_Container.Resolve<ExpressionEvaluatorController>();
+        }
+
+        public ExpressionEvaluatorController<TModel> GetEquationsManager<TModel>(TModel model)
+        {
+            var childCont = m_Container.CreateChildContainer();
+            childCont.RegisterInstance(model);
+
+            return childCont.Resolve<ExpressionEvaluatorController<TModel>>();
+        }
+
+        private void RegisterService<TService>(Action<ServiceResolver<TService>> action)
+        {
+            var resolver = new ServiceResolver<TService>(m_Container);
+
+            action.Invoke(resolver);
+
+            var regs = m_Container.Registrations.Where(r => r.RegisteredType == typeof(TService));
+
+            if (!regs.Any())
+            {
+                throw new ServiceNotRegisteredException(typeof(TService));
+            }
         }
     }
 }

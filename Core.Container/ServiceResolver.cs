@@ -3,52 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity;
+using Unity.Lifetime;
 
 namespace Xarial.Community.EqMgr.Core.Container
 {
-    public interface IServiceResolver<TService>
+    public class ServiceResolver<TService>
     {
-        Type GetServiceType();
-        //TODO: allow to register instance
-    }
+        private UnityContainer m_Container;
 
-    public class ServiceResolver<TService> : IServiceResolver<TService>
-    {
-        public static IServiceResolver<TService> Create<TServiceImp>()
+        internal ServiceResolver(UnityContainer container)
+        {
+            m_Container = container;
+        }
+
+        public void RegisterType<TServiceImp>()
             where TServiceImp : class, TService
         {
-            return new ServiceResolver<TService, TServiceImp>();
+            m_Container.RegisterType<TService, TServiceImp>(
+                new HierarchicalLifetimeManager());
         }
 
-        private Type m_Type;
-
-        internal ServiceResolver(Type type)
+        public void RegisterMultipleType<TServiceImp>()
+            where TServiceImp : class, TService
         {
-            m_Type = type;
+            //NOTE: for resolving the array of dependencies it is required to specify the name
 
-            if (!typeof(TService).IsAssignableFrom(type))
-            {
-                throw new InvalidCastException($"{type.FullName} type must implement {typeof(TService).FullName}");
-            }
+            m_Container.RegisterType<TService, TServiceImp>(
+                Guid.NewGuid().ToString(),
+                new HierarchicalLifetimeManager());
         }
 
-        public Type GetServiceType()
+        public void RegisterInstance(TService inst)
         {
-            return m_Type;
-        }
-    }
-
-    public class ServiceResolver<TService, TServiceImp> : IServiceResolver<TService>
-        where TServiceImp : class, TService
-    {
-        public static IServiceResolver<TService> Create()
-        {
-            return new ServiceResolver<TService, TServiceImp>();
+            m_Container.RegisterInstance(inst);
         }
 
-        public Type GetServiceType()
+        public void RegisterSingleton<TServiceImp>()
+            where TServiceImp : class, TService
         {
-            return typeof(TServiceImp);
+            m_Container.RegisterType<TService, TServiceImp>(
+                new ContainerControlledLifetimeManager());
         }
     }
 }

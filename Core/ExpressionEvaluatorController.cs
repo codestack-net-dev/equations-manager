@@ -7,45 +7,44 @@ namespace Xarial.Community.EqMgr.Core
 {
     public interface IExpressionEvaluatorController
     {
-        void Load(ExpressionCollection expressions, IVariablesMonitor varsMonitor);
+        void Load(ExpressionCollection expressions);
+    }
+
+    public class ExpressionEvaluatorController<TModel> : ExpressionEvaluatorController
+    {
+        public TModel Model { get; private set; }
+
+        public ExpressionEvaluatorController(IVariablesProcessor varsProcessor, IExpressionEvaluator evaluator,
+            IValueSetter valSetter, IVariablesMonitor varsMonitor, TModel model) 
+            : base(varsProcessor, evaluator, valSetter, varsMonitor)
+        {
+            Model = model;
+        }
     }
 
     public class ExpressionEvaluatorController : IExpressionEvaluatorController
     {
-        private IVariablesProcessor m_VarsProcessor;
-        private IExpressionEvaluator m_Evaluator;
+        private readonly IVariablesProcessor m_VarsProcessor;
+        private readonly IExpressionEvaluator m_Evaluator;
+        private readonly IVariablesMonitor m_VarsMonitor;
+        private readonly IValueSetter m_ValSetter;
 
         private Dictionary<IVariable, List<Expression>> m_ExpDeps;
-        private IVariablesMonitor m_VarsMonitor;
-        private IValueSetter m_ValSetter;
 
-        public ExpressionEvaluatorController(IVariablesProcessor varsProcessor, IExpressionEvaluator evaluator, IValueSetter valSetter)
+        public ExpressionEvaluatorController(
+            IVariablesProcessor varsProcessor, IExpressionEvaluator evaluator, IValueSetter valSetter,
+            IVariablesMonitor varsMonitor)
         {
             m_VarsProcessor = varsProcessor;
             m_Evaluator = evaluator;
             m_ValSetter = valSetter;
+            m_VarsMonitor = varsMonitor;
+
+            m_VarsMonitor.VariableChanged += OnVariableChanged;
         }
 
-        public void Load(ExpressionCollection expressions, IVariablesMonitor varsMonitor)
+        public void Load(ExpressionCollection expressions)
         {
-            if (expressions == null)
-            {
-                throw new ArgumentNullException(nameof(expressions));
-            }
-
-            if (varsMonitor == null)
-            {
-                throw new ArgumentNullException(nameof(varsMonitor));
-            }
-
-            if (m_VarsMonitor != null)
-            {
-                m_VarsMonitor.VariableChanged -= OnVariableChanged;
-            }
-
-            m_VarsMonitor = varsMonitor;
-            m_VarsMonitor.VariableChanged += OnVariableChanged;
-
             m_ExpDeps = new Dictionary<IVariable, List<Expression>>();
             IndexVariables(expressions);
         }

@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="ContainerModule.cs" />
     <Compile Include="EquationsManagerContainer.cs" />
+    <Compile Include="Exceptions\ServiceNotRegisteredException.cs" />
     <Compile Include="IContainerModule.cs" />
     <Compile Include="ServiceResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

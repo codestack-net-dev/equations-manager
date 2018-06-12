@@ -9,43 +9,18 @@ namespace Xarial.Community.EqMgr.Core.Container
 {
     public abstract class BaseContainerModule : IContainerModule
     {
-        public virtual IServiceResolver<IExpressionEvaluator> RegisterExpressionEvaluator()
+        public virtual void RegisterExpressionEvaluator(ServiceResolver<IExpressionEvaluator> resolver)
         {
-            return ServiceResolver<IExpressionEvaluator, DataTableExpressionEvaluator>.Create();
+            resolver.RegisterSingleton<DataTableExpressionEvaluator>();
         }
 
-        public virtual IServiceResolver<IVariablesProcessor> RegisterVariablesProcessor()
+        public virtual void RegisterVariablesProcessor(ServiceResolver<IVariablesProcessor> resolver)
         {
-            return ServiceResolver<IVariablesProcessor, VariablesProcessor>.Create();
+            resolver.RegisterSingleton<VariablesProcessor>();
         }
 
-        public abstract IServiceResolver<IValueSetter> RegisterValueSetter();
-        public abstract IServiceResolver<IVariablesMonitor> RegisterVariablesMonitor();
-        public abstract IServiceResolver<IVariableResolver>[] RegisterVariableResolvers();
-    }
-
-    public class BaseContainerModule<TValueSetterImp, TVariablesMonitorImp> : BaseContainerModule
-        where TValueSetterImp : class, IValueSetter
-        where TVariablesMonitorImp : class, IVariablesMonitor
-    {
-        public override IServiceResolver<IValueSetter> RegisterValueSetter()
-        {
-            return ServiceResolver<IValueSetter, TValueSetterImp>.Create();
-        }
-
-        public override IServiceResolver<IVariablesMonitor> RegisterVariablesMonitor()
-        {
-            return ServiceResolver<IVariablesMonitor, TVariablesMonitorImp>.Create();
-        }
-
-        public override IServiceResolver<IVariableResolver>[] RegisterVariableResolvers()
-        {
-            throw new NotImplementedException();
-        }
-
-        public BaseContainerModule(params IVariableResolver[] resolvers)
-        {
-            //TODO: implement assigning of resolvers
-        }
+        public abstract void RegisterVariableResolver(ServiceResolver<IVariableResolver> resolver);
+        public abstract void RegisterValueSetter(ServiceResolver<IValueSetter> resolver);
+        public abstract void RegisterVariablesMonitor(ServiceResolver<IVariablesMonitor> resolver);
     }
 }
