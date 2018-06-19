@@ -18,9 +18,9 @@ namespace Xarial.Community.EqMgr.View.Tests
         {
             var expEditor = new ExpressionEditorWindow();
 
-            expEditor.Show();
+            //expEditor.Show();
             //expEditor.ShowDialog();
-            expEditor.Close();
+            //expEditor.Close();
 
             var exp = expEditor.Editor.Expressions;
 

@@ -5,24 +5,35 @@ using Xarial.Community.EqMgr.Core.Services;
 
 namespace Xarial.Community.EqMgr.Core
 {
-    public interface IExpressionEvaluatorController
+    /// <summary>
+    /// Interface responsible for managing and applying the equations
+    /// </summary>
+    /// <remarks>This class will handle the variable changes and update the corresponding expression values</remarks>
+    public interface IEquationsManager
     {
         void Load(ExpressionCollection expressions);
     }
 
-    public class ExpressionEvaluatorController<TModel> : ExpressionEvaluatorController
+    /// <summary>
+    /// Controlling the equation manager for one entity (i.e. document) with an ability to inject the pointer to the entity
+    /// </summary>
+    /// <typeparam name="TModel">Injectable entity model</typeparam>
+    public class EquationsManager<TModel> : EquationsManager
     {
         public TModel Model { get; private set; }
 
-        public ExpressionEvaluatorController(IVariablesProcessor varsProcessor, IExpressionEvaluator evaluator,
-            IValueSetter valSetter, IVariablesMonitor varsMonitor, TModel model) 
+        public EquationsManager(IVariablesProcessor varsProcessor, IExpressionEvaluator evaluator,
+            IValueSetter valSetter, IVariablesMonitor varsMonitor, TModel model)
             : base(varsProcessor, evaluator, valSetter, varsMonitor)
         {
             Model = model;
         }
     }
 
-    public class ExpressionEvaluatorController : IExpressionEvaluatorController
+    /// <summary>
+    /// Controlling the equation service for one entity (i.e. document)
+    /// </summary>
+    public class EquationsManager : IEquationsManager
     {
         private readonly IVariablesProcessor m_VarsProcessor;
         private readonly IExpressionEvaluator m_Evaluator;
@@ -31,7 +42,7 @@ namespace Xarial.Community.EqMgr.Core
 
         private Dictionary<IVariable, List<Expression>> m_ExpDeps;
 
-        public ExpressionEvaluatorController(
+        public EquationsManager(
             IVariablesProcessor varsProcessor, IExpressionEvaluator evaluator, IValueSetter valSetter,
             IVariablesMonitor varsMonitor)
         {
@@ -47,6 +58,38 @@ namespace Xarial.Community.EqMgr.Core
         {
             m_ExpDeps = new Dictionary<IVariable, List<Expression>>();
             IndexVariables(expressions);
+        }
+
+        public IVariablesProcessor VarsProcessor
+        {
+            get
+            {
+                return m_VarsProcessor;
+            }
+        }
+
+        public IExpressionEvaluator Evaluator
+        {
+            get
+            {
+                return m_Evaluator;
+            }
+        }
+
+        public IVariablesMonitor VarsMonitor
+        {
+            get
+            {
+                return m_VarsMonitor;
+            }
+        }
+
+        public IValueSetter ValSetter
+        {
+            get
+            {
+                return m_ValSetter;
+            }
         }
 
         private void IndexVariables(ExpressionCollection expressions)

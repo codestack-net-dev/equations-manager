@@ -41,13 +41,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\RegExVariableAttribute.cs" />
+    <Compile Include="EquationsManager.cs" />
     <Compile Include="Exceptions\EvaluationErrorException.cs" />
     <Compile Include="Exceptions\ExpressionValueApplyException.cs" />
     <Compile Include="Exceptions\GenericEvaluatorException.cs" />
     <Compile Include="Exceptions\InvalidSyntaxException.cs" />
     <Compile Include="Expression.cs" />
     <Compile Include="ExpressionCollection.cs" />
-    <Compile Include="ExpressionEvaluatorController.cs" />
     <Compile Include="Services\IExpressionEvaluator.cs" />
     <Compile Include="Services\IValueSetter.cs" />
     <Compile Include="IVariable.cs" />

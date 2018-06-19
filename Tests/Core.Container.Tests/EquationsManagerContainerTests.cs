@@ -59,6 +59,10 @@ namespace Core.Container.Tests
             }
         }
 
+        public class ModelMock
+        {
+        }
+
         public class ContainerModuleMock : BaseContainerModule
         {
             public override void RegisterValueSetter(ServiceResolver<IValueSetter> resolver)
@@ -80,11 +84,33 @@ namespace Core.Container.Tests
         #endregion
 
         [TestMethod]
-        public void TestLifecycle()
+        public void GetEquationsManagerTest()
         {
             var cont = new EquationsManagerContainer(new ContainerModuleMock());
             
-            var mgr = cont.GetEquationsManager();
+            var m1 = cont.GetEquationsManager();
+            var m2 = cont.GetEquationsManager();
+
+            Assert.AreNotEqual(m1, m2);
+            Assert.AreEqual(m1.Evaluator, m2.Evaluator);
+            Assert.AreEqual(m1.VarsProcessor, m2.VarsProcessor);
+            Assert.AreNotEqual(m1.ValSetter, m2.ValSetter);
+            Assert.AreNotEqual(m1.VarsMonitor, m2.VarsMonitor);
+        }
+
+        [TestMethod]
+        public void GetEquationsManagerWithModelTest()
+        {
+            var cont = new EquationsManagerContainer(new ContainerModuleMock());
+
+            var m1 = cont.GetEquationsManager<ModelMock>(new ModelMock());
+            var m2 = cont.GetEquationsManager<ModelMock>(new ModelMock());
+
+            Assert.AreNotEqual(m1, m2);
+            Assert.AreEqual(m1.Evaluator, m2.Evaluator);
+            Assert.AreEqual(m1.VarsProcessor, m2.VarsProcessor);
+            Assert.AreNotEqual(m1.ValSetter, m2.ValSetter);
+            Assert.AreNotEqual(m1.VarsMonitor, m2.VarsMonitor);
         }
     }
 }

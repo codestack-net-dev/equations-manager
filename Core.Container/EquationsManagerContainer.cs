@@ -26,20 +26,21 @@ namespace Xarial.Community.EqMgr.Core.Container
             RegisterService<IVariablesMonitor>(r => module.RegisterVariablesMonitor(r));
             RegisterService<IVariablesProcessor>(r => module.RegisterVariablesProcessor(r));
 
-            m_Container.RegisterType<ExpressionEvaluatorController>();
+            m_Container.RegisterType<EquationsManager>();
         }
 
-        public ExpressionEvaluatorController GetEquationsManager()
+        public EquationsManager GetEquationsManager()
         {
-            return m_Container.Resolve<ExpressionEvaluatorController>();
+            var childCont = m_Container.CreateChildContainer();
+            return childCont.Resolve<EquationsManager>();
         }
 
-        public ExpressionEvaluatorController<TModel> GetEquationsManager<TModel>(TModel model)
+        public EquationsManager<TModel> GetEquationsManager<TModel>(TModel model)
         {
             var childCont = m_Container.CreateChildContainer();
             childCont.RegisterInstance(model);
 
-            return childCont.Resolve<ExpressionEvaluatorController<TModel>>();
+            return childCont.Resolve<EquationsManager<TModel>>();
         }
 
         private void RegisterService<TService>(Action<ServiceResolver<TService>> action)

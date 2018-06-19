@@ -22,7 +22,11 @@ namespace Xarial.Community.EqMgr.Core.Container.Tests
         {
         }
 
-        public interface IService2Mock : IServiceMock
+        public interface IService1AMock : IServiceMock
+        {
+        }
+
+        public interface IService2Mock
         {
             IService1Mock S1
             {
@@ -49,6 +53,10 @@ namespace Xarial.Community.EqMgr.Core.Container.Tests
         }
 
         public class Service1Mock : IService1Mock
+        {
+        }
+
+        public class Service1AMock : IService1AMock
         {
         }
 
@@ -154,15 +162,15 @@ namespace Xarial.Community.EqMgr.Core.Container.Tests
             var res2 = new ServiceResolver<IService4Mock>(cont);
 
             res1.RegisterMultipleType<Service1Mock>();
-            res1.RegisterMultipleType<Service2Mock>();
+            res1.RegisterMultipleType<Service1AMock>();
             res2.RegisterType<Service4Mock>();
 
             var s4 = cont.Resolve<IService4Mock>();
 
             Assert.IsNotNull(s4.Services);
             Assert.AreEqual(2, s4.Services.Length);
-            //Assert.IsTrue(s4.Services.Contains(cont.Resolve<IService1Mock>()));
-            //Assert.IsTrue(s4.Services.Contains(cont.Resolve<IService2Mock>()));
+            Assert.IsTrue(s4.Services.OfType<Service1Mock>().Any());
+            Assert.IsTrue(s4.Services.OfType<Service1AMock>().Any());
         }
 
         [TestMethod]
